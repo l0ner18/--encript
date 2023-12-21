@@ -1,19 +1,30 @@
 from tkinter import *
-from tkinter import messagebox
+from tkinter.messagebox import showerror, showinfo
+import random, os
+import xlsxwriter
 
-# создание окна
 ws = Tk()
-ws.title('УАШ')
-ws.geometry('225x250')
+ws.title('YASH')
+ws.geometry('355x200')
 ws["bg"] = "gray80"
 
-Label(ws, bg='gray81', text="Введите фразу: ").place(x=50, y=30)
+Label(ws, bg='gray81', text="Проверка").place(x=60, y=10)
+Label(ws, bg='gray81', text="Фраза").place(x=30, y=30)
 decimal_number_ = Entry(ws)
-decimal_number_.place(x=50, y=50)
+decimal_number_.place(x=30, y=50)
 
-def Decimal_number():
+Label(ws, bg='gray81', text="Ключ").place(x=30, y=75)
+decimal_number_key_ = Entry(ws)
+decimal_number_key_.place(x=30, y=95)
+
+Label(ws, bg='gray81', text="Генерация").place(x=225, y=10)
+Label(ws, bg='gray81', text="Количество данных").place(x=200, y=30)
+decimal_count_ = Entry(ws)
+decimal_count_.place(x=200, y=50)
+
+def Decimal_number(number):
     x=''
-    decimal_number = decimal_number_.get()
+    decimal_number = number
     if decimal_number != '':
         decimal_number = int(decimal_number)
         binary_representation = bin(int(decimal_number))[2:]
@@ -23,14 +34,9 @@ def Decimal_number():
             x = binary_representation
     return x
 
-
-Label(ws, bg='gray81', text="Введите ключ: ").place(x=50, y=80)
-decimal_number_key_ = Entry(ws)
-decimal_number_key_.place(x=50, y=100)
-
-def Decimal_number_key():
+def Decimal_number_key(key):
     k=''
-    decimal_number_key = decimal_number_key_.get()
+    decimal_number_key = key
     if decimal_number_key != '':
         decimal_number_key = int(decimal_number_key)
         binary_representation = bin(decimal_number_key)[2:]
@@ -40,6 +46,17 @@ def Decimal_number_key():
             k = binary_representation
     return k
 
+def input_number():
+    decimal_number = decimal_number_.get()
+    return decimal_number
+
+def input_key():
+    decimal_number_key = decimal_number_key_.get()
+    return decimal_number_key
+
+def input_count():
+    decimal_count = decimal_count_.get()
+    return decimal_count
 
 def permutation_with_expansion(data_for_permutation, keyE1): #перестановка с расширением
     result = ''
@@ -71,9 +88,9 @@ def permutation(data, key):
         result = result + data[int(key[i]) - 1]
     return result
 
-def Answer():
-    x = Decimal_number()
-    k = Decimal_number_key()
+def Answer(data, key):
+    x = data
+    k = key
     dict1 = {
         '0000': '100', '0001': '110', '0010': '001', '0100': '101',
         '0011': '011', '0111': '101', '0101': '111', '0110': '010',
@@ -96,60 +113,102 @@ def Answer():
     k1 = k[:12]
     k2 = k[6:18]
     k3 = k[12:24]
-    left_side = str(x[:8])
 
+    left_side = str(x[:8])
     data_for_permutation = str(x[8:] * 2)
 
-    f1_1 = ""
-    f2_1 = ""
-    f3_1 = ""
-    f4_1 = ""
-    f5_1 = ""
     keyE1 = "341268573824"
     keyE2 = "87325416"
 
+    f3_1 = ""
+
     f1_1 = permutation_with_expansion(data_for_permutation, keyE1) #перестановка с расширением
     f2_1 = summ_with_key(f1_1, k1) #сумма с ключем
-    f3_1 = f3_1 + dict1[f2_1[:4]] + dict2[f2_1[4:8]] + dict3[f2_1[8:]] #поиск по таблицам
+    f3_1 = f3_1 + dict1[f2_1[:4]] + dict2[f2_1[4:8]] + dict3[f2_1[8:]] #поиск по таблицам 3956874
     f4_1 = permutation(f3_1, keyE2) #перестановка
     f5_1 = summ_with_left_side(left_side, f4_1) #сложение с левой частью
 
-
     x1 = str(x[8:])
     x2 = f5_1
-    xf_buff = x2
-    xf1 = ""
-    xf2 = ""
-    xf3 = ""
-    xf4 = ""
-    xf5 = ""
+    f3_2 = ""
 
-    xf1 = permutation_with_expansion(x2, keyE1) #перестановка с расширением
-    xf2 = summ_with_key(xf1, k2) #сумма с ключем
-    xf3 = xf3 + dict1[xf2[:4]] + dict2[xf2[4:8]] + dict3[xf2[8:]] #поиск по таблицам
-    xf4 = permutation(xf3, keyE2) #перестановка
-    xf5 = summ_with_left_side(x1, xf4) #сложение с левой частью
+    f1_2 = permutation_with_expansion(x2, keyE1) #перестановка с расширением
+    f2_2 = summ_with_key(f1_2, k2) #сумма с ключем
+    f3_2 = f3_2 + dict1[f2_2[:4]] + dict2[f2_2[4:8]] + dict3[f2_2[8:]] #поиск по таблицам
+    f4_2 = permutation(f3_2, keyE2) #перестановка
+    f5_2 = summ_with_left_side(x1, f4_2) #сложение с левой частью
 
-    xf_buff = x2
-    x2 = xf5
-    x1 = xf_buff
-    xf1 = ""
-    xf2 = ""
-    xf3 = ""
-    xf4 = ""
-    xf5 = ""
+    x1 = x2
+    x2 = f5_2
 
-    xf1 = permutation_with_expansion(x2, keyE1) #перестановка с расширением
-    xf2 = summ_with_key(xf1, k3) #сумма с ключем
-    xf3 = xf3 + dict1[xf2[:4]] + dict2[xf2[4:8]] + dict3[xf2[8:]]
-    xf4 = permutation(xf3, keyE2) #перестановка
-    xf5 = summ_with_left_side(x1, xf4) #сложение с левой частью
+    f3_3 = ""
 
-    answer = xf5 + x2
+    f1_3 = permutation_with_expansion(x2, keyE1) #перестановка с расширением
+    f2_3 = summ_with_key(f1_3, k3) #сумма с ключем
+    f3_3 = f3_3 + dict1[f2_3[:4]] + dict2[f2_3[4:8]] + dict3[f2_3[8:]]
+    f4_3 = permutation(f3_3, keyE2) #перестановк
+    f5_3 = summ_with_left_side(x1, f4_3) #сложение с левой частью
+
+    answer = f5_3 + x2
     answer_final = (int(answer, 2))
-    Label(ws, bg='gray81', text=f'Результат: {answer_final}').place(x=65, y=180)
+    return answer_final
+
+def generate_number():
+    return random.randint(0, 65535)
+
+def generate_key():
+    return random.randint(0, 16777215)
+
+def Generate(count):
+    try:
+        workbook = xlsxwriter.Workbook('dataYASH.xlsx')
+        worksheet = workbook.add_worksheet()
+        worksheet.write('A1', 'X')
+        worksheet.write('B1', 'K')
+        worksheet.write('C1', 'Answer')
+
+        for i in range(1, int(count) + 1):
+            x = str(Decimal_number(generate_number()))
+            k = str(Decimal_number_key(generate_key()))
 
 
-btn = Button(ws, text="Зашифровать", command=Answer)
-btn.place(x=65, y=135)
+            answer = Answer(x, k)
+            worksheet.write(f'A{i + 1}', int(x, 2))
+            worksheet.write(f'B{i + 1}', int(k, 2))
+            worksheet.write(f'C{i + 1}', answer)
+
+        workbook.close()
+
+        # Проверяем, существует ли файл после закрытия
+        if os.path.exists('dataYASH.xlsx'):
+            showinfo("Информация", "Данные успешно сгенерированы и сохранены в dataYASH.xlsx")
+        else:
+            showerror("Ошибка", "Не удалось создать файл")
+
+    except Exception as e:
+        showerror("Ошибка", f"Произошла ошибка при генерации данных: {str(e)}")
+
+def check():
+    data = input_number()
+    key = input_key()
+
+    if data == '' or key == '':
+        showerror(title="Ошибка", message="Заполните все поля")
+    else:
+        data_to_answer = Decimal_number(data)
+        key_to_answer = Decimal_number_key(key)
+        answer = Answer(str(data_to_answer), str(key_to_answer))
+        Label(ws, bg='gray81', text=f'Результат: {answer}').place(x=50, y=170)
+def check_generate():
+    count = input_count()
+
+    if count == '':
+        showerror(title="Ошибка", message="Заполните поле")
+    else:
+        Generate(count)
+
+btn = Button(ws, text="Зашифровать", command=check)
+btn.place(x=50, y=135)
+btn_generate = Button(ws, text="Сгенерировать", command=check_generate)
+btn_generate.place(x=215, y=135)
 ws.mainloop()
