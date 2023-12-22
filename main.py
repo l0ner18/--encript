@@ -42,8 +42,7 @@ def Decimal_number_key(key):
         binary_representation = bin(decimal_number_key)[2:]
         if len(binary_representation) < 24:
             k = '0' * (24 - len(binary_representation)) + binary_representation
-        else:
-            k = binary_representation
+        
     return k
 
 def input_number():
